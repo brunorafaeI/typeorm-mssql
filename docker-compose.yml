@@ -1,0 +1,74 @@
+version: "3"
+services:
+
+  # redis:
+  #   image: redis:alpine
+  #   container_name: dwh_redis
+  #   ports:
+  #     - 6379:6379
+  #   networks:
+  #     - backend
+  #   deploy:
+  #     replicas: 2
+  #     update_config:
+  #       parallelism: 2
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: dwh_mssql
+    env_file:
+      - .env
+    environment:
+      - ACCEPT_EULA=${ACCEPT_EULA}
+      - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - 1433:1433
+    networks:
+      - backend
+
+  # postgres:
+  #   image: postgres
+  #   container_name: gostack_pgsql
+  #   restart: always
+  #   volumes:
+  #     - db-data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=gostack
+  #   ports:
+  #     - 5434:5432
+  #   networks:
+  #     - backend
+  #   deploy:
+  #     placement:
+  #       max_replicas_per_node: 1
+  #       constraints:
+  #         - "node.role==manager"
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: gostack_pgadmin
+  #   restart: always
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=bdasilva
+  #     - PGADMIN_DEFAULT_PASSWORD=bdasilva
+  #   ports:
+  #     - 8083:80
+
+  logstash:
+    image: logstash:7.9.0
+    container_name: dwh_logstash
+    ports:
+      - 5001:5001
+    volumes:
+      - ./logstash:/etc/logstash/conf.d
+    command: bash -c "cp /etc/logstash/conf.d/drivers/mssql-jdbc-8.4.1.jre11.jar logstash-core/lib/jars/"
+    command: bash -c "logstash -f /etc/logstash/conf.d/mssql.conf && bin/logstash-plugin install logstash-output-mongodb"
+
+networks:
+  backend:
+
+# volumes:
+#   db-data:

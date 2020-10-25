@@ -1,0 +1,19 @@
+{
+  "type": "mongodb",
+  "host": "localhost",
+  "port": 27017,
+  "database": "typeorm",
+  "synchronize": true,
+  "entities": [
+    "./src/models/**/*.ts"
+  ],
+  "migrations": [
+    "./src/database/migrations/**/*.ts"
+  ],
+  "subscribers": [
+    "src/subscriber/**/*.ts"
+  ],
+  "cli": {
+    "entitiesDir": "./src/models", "migrationsDir": "src/migration", "subscribersDir": "src/subscriber"
+  }
+}

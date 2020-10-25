@@ -1,0 +1,15 @@
+## Vscode IDE settings
+.vscode/
+
+## Jetbrains IDE settings
+.idea/
+
+## Node's dependences
+node_modules/
+
+## Build files
+.build/
+
+## Folder to upload images
+tmp/*
+!tmp/.gitkeep
