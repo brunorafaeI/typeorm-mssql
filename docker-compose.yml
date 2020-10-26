@@ -29,6 +29,18 @@ services:
     networks:
       - backend
 
+  mongo:
+    image: mongo
+    container_name: dwh_mongo
+    restart: always
+    volumes:
+      - ./data/db:/data/
+    ports:
+      - 27017:27017
+    networks:
+      - backend
+
+
   # postgres:
   #   image: postgres
   #   container_name: gostack_pgsql
@@ -58,14 +70,19 @@ services:
   #     - 8083:80
 
   logstash:
-    image: logstash:7.9.0
+    # image: logstash:7.9.3
+    build: ./
     container_name: dwh_logstash
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline/
     ports:
       - 5001:5001
-    volumes:
-      - ./logstash:/etc/logstash/conf.d
-    command: bash -c "cp /etc/logstash/conf.d/drivers/mssql-jdbc-8.4.1.jre11.jar logstash-core/lib/jars/"
-    command: bash -c "logstash -f /etc/logstash/conf.d/mssql.conf && bin/logstash-plugin install logstash-output-mongodb"
+    networks:
+      - backend
+    depends_on:
+      - mssql
+      - mongo
+    command: bash -c "logstash -f /usr/share/logstash/pipeline/mssql.conf"
 
 networks:
   backend:

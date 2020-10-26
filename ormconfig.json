@@ -1,6 +1,6 @@
 {
   "type": "mongodb",
-  "host": "localhost",
+  "host": "192.168.1.5",
   "port": 27017,
   "database": "typeorm",
   "synchronize": true,
